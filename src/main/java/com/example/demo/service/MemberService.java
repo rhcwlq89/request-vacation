@@ -2,7 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.dto.MemberDto;
 import com.example.demo.entity.MemberM;
+import com.example.demo.entity.MemberVacationM;
 import com.example.demo.repository.MemberMRepository;
+import com.example.demo.repository.MemberVacationMRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +24,7 @@ import java.util.List;
 @Slf4j
 public class MemberService implements UserDetailsService {
     private final MemberMRepository memberMRepository;
+    private final MemberVacationMRepository vacationMRepository;
 
     @Transactional
     public void signup(MemberDto memberDto) {
@@ -33,8 +37,15 @@ public class MemberService implements UserDetailsService {
         memberM.setName(memberDto.getName());
         memberM.setPassword(passwordEncoder.encode(memberDto.getPassword()));
 
-        Long id = memberMRepository.save(memberM).getId();
-        log.info(id.toString());
+        memberMRepository.save(memberM).getId();
+
+        // 사용자에게는 매년 15일의 연차가 부여됩니다
+        MemberVacationM vacationM = new MemberVacationM();
+        vacationM.setMemberM(memberM);
+        vacationM.setTotalCount(15d);
+        vacationM.setUseCount(0d);
+        vacationM.setVacationYear(String.valueOf(LocalDate.now().getYear()));
+        vacationMRepository.save(vacationM);
     }
 
 

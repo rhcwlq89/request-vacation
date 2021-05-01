@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(schema = "vacation", name = "member_vacation_history")
 public class MemberVacationHistory {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
 
     @ManyToOne(fetch = FetchType.LAZY)

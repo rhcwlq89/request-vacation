@@ -10,11 +10,12 @@ import javax.persistence.*;
 @Getter @Setter
 @Table(schema = "vacation", name = "member_vacation_m")
 public class MemberVacationM {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberVacationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "member_id")
     @JsonBackReference
     private MemberM memberM;
 
