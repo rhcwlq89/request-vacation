@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.code.VacationStatusCode;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ public class MemberVacationHistory {
     private MemberVacationM memberVacationM;
 
     @Column
-    private String requestStatus;
+    private VacationStatusCode requestStatus;
 
     @Column
     private LocalDate startDate;

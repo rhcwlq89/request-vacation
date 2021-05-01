@@ -27,13 +27,6 @@ public class VacationController {
         return null;
     }
 
-    @PutMapping
-    @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> modifyVacation(@RequestBody VacationRequestDto vacationRequestDto) {
-        vacationService.modifyVacation(vacationRequestDto);
-        return null;
-    }
-
     @DeleteMapping
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> cancelVacation(@RequestBody Long historyId) {

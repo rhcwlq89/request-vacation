@@ -1,7 +1,12 @@
 package com.example.demo.service;
 
+import com.example.demo.common.code.VacationStatusCode;
 import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationRequestDto;
+import com.example.demo.entity.MemberM;
+import com.example.demo.entity.MemberVacationHistory;
+import com.example.demo.entity.MemberVacationM;
+import com.example.demo.repository.MemberMRepository;
 import com.example.demo.repository.MemberVacationHistoryRepository;
 import com.example.demo.repository.MemberVacationMRepository;
 import lombok.AllArgsConstructor;
@@ -9,11 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class VacationService {
+    private final MemberMRepository memberMRepository;
     private final MemberVacationMRepository vacationMRepository;
     private final MemberVacationHistoryRepository historyRepository;
 
@@ -23,15 +30,25 @@ public class VacationService {
 //        추가 기능: 사용 일수를 입력하는 대신 시작일, 종료일을 가지고 공휴일을 제외하고 계산해도 됩니다.
 //        아직 시작하지 않은 휴가는 취소할 수 있습니다.
     public void requestVacation(VacationRequestDto vacationRequestDto) {
+        Optional<MemberM> memberM = memberMRepository.findById(vacationRequestDto.getMemberId());
+        memberM.ifPresent(member -> {
+            vacationMRepository.findByMemberM(member).ifPresent(vacationM -> {
+                if(vacationM.getTotalCount() >= vacationM.getUseCount() + vacationRequestDto.getUseDays()) {
 
-    }
-
-    public void modifyVacation(VacationRequestDto vacationRequestDto) {
-
+                } else {
+                    throw new RuntimeException("휴가일수 부족");
+                }
+            });
+        });
     }
 
     public void cancelVacation(Long historyId) {
+        MemberVacationHistory history = historyRepository.findById(historyId).orElseThrow(RuntimeException::new);
+        history.setRequestStatus(VacationStatusCode.CANCEL);
 
+        MemberVacationM memberVacationM = history.getMemberVacationM();
+        double v = memberVacationM.getUseCount() - history.getVacationDays();
+        memberVacationM.setUseCount(v);
     }
 
     public List<VacationDto> readVacations() {

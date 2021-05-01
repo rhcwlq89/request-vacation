@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-import com.example.demo.common.VacationTypeCode;
+import com.example.demo.common.code.VacationTypeCode;
 import lombok.Data;
 
 import java.time.LocalDate;
