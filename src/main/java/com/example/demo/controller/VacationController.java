@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/vacation")
@@ -26,29 +29,28 @@ public class VacationController {
 
     @PutMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> modifyVacation() {
-        log.info("modifyVacation");
+    public ResponseEntity<String> modifyVacation(@RequestBody VacationRequestDto vacationRequestDto) {
+        vacationService.modifyVacation(vacationRequestDto);
         return null;
     }
 
     @DeleteMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> cancelVacation() {
-        log.info("cancelVacation");
+    public ResponseEntity<String> cancelVacation(@RequestBody Long historyId) {
+        vacationService.cancelVacation(historyId);
         return null;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> readVacations() {
-        log.info("readVacations");
-        return null;
+    public ResponseEntity<List<VacationDto>> readVacations() {
+        return ResponseEntity.ok(vacationService.readVacations());
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/detail/{historyId}")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> readVacationDetail() {
-        return null;
+    public ResponseEntity<VacationDto> readVacationDetail(@PathVariable Long historyId) {
+        return ResponseEntity.ok(vacationService.readVacation(historyId));
     }
 
 }

@@ -36,10 +36,8 @@ public class MemberService implements UserDetailsService {
         MemberM memberM = new MemberM();
         memberM.setName(memberDto.getName());
         memberM.setPassword(passwordEncoder.encode(memberDto.getPassword()));
+        memberMRepository.save(memberM);
 
-        memberMRepository.save(memberM).getId();
-
-        // 사용자에게는 매년 15일의 연차가 부여됩니다
         MemberVacationM vacationM = new MemberVacationM();
         vacationM.setMemberM(memberM);
         vacationM.setTotalCount(15d);

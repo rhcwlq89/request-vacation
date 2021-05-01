@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -33,15 +35,11 @@ public class MemberVacationHistory {
     @Column
     private Double vacationDays;
 
-    @Column
-    private Long regId;
-
+    @CreatedDate
     @Column
     private LocalDateTime regDt;
 
-    @Column
-    private Long modId;
-
+    @LastModifiedDate
     @Column
     private LocalDateTime modDt;
 }

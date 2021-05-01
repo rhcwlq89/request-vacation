@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.repository.MemberVacationHistoryRepository;
 import com.example.demo.repository.MemberVacationMRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -21,5 +24,21 @@ public class VacationService {
 //        아직 시작하지 않은 휴가는 취소할 수 있습니다.
     public void requestVacation(VacationRequestDto vacationRequestDto) {
 
+    }
+
+    public void modifyVacation(VacationRequestDto vacationRequestDto) {
+
+    }
+
+    public void cancelVacation(Long historyId) {
+
+    }
+
+    public List<VacationDto> readVacations() {
+        return null;
+    }
+
+    public VacationDto readVacation(Long historyId) {
+        return null;
     }
 }
