@@ -19,4 +19,7 @@ public class MemberM {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "authority")
+    private String authority = "ROLE_USER";
+
 }

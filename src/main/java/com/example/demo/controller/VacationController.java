@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,30 +17,35 @@ public class VacationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> requestVacation() {
         log.info("requestVacation");
         return null;
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> modifyVacation() {
         log.info("modifyVacation");
         return null;
     }
 
     @DeleteMapping
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> cancelVacation() {
         log.info("cancelVacation");
         return null;
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> readVacations() {
         log.info("readVacations");
         return null;
     }
 
     @GetMapping("/detail")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> readVacationDetail() {
         return null;
     }
