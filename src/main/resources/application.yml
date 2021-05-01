@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://db.cnhslwt0ddya.ap-northeast-2.rds.amazonaws.com/vacation
+    username: rhcwlq89
+    password: gy1i2rm8??
+    hikari:
+      maximum-pool-size: 30
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+logging.level:
+  org.hibernate.SQL: debug
+  com.example: debug
