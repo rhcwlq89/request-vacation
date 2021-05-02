@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.common.code.VacationStatusCode;
+import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.entity.MemberM;
@@ -11,6 +12,7 @@ import com.example.demo.repository.MemberVacationHistoryRepository;
 import com.example.demo.repository.MemberVacationMRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,7 +53,8 @@ public class VacationService {
         memberVacationM.setUseCount(v);
     }
 
-    public List<VacationDto> readVacations() {
+    public Page<VacationDto> readVacations(SearchDTO searchDTO) {
+        List<MemberVacationM> vacationByMemberId = vacationMRepository.findVacationByMemberId(searchDTO.getMemberId());
         return null;
     }
 
