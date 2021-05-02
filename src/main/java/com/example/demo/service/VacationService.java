@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -101,9 +100,12 @@ public class VacationService {
     }
 
     @Transactional
-    public List<VacationHistoryDto> readVacations(SearchDTO searchDTO) {
+    public VacationDto readVacations(SearchDTO searchDTO) {
         String name = SecurityUtil.getCurrentUsername().orElseThrow(() -> new RuntimeException("알 수 없는 사용자입니다."));
-        return historyRepository.findByNameAndYear(name, searchDTO.getVacationYear());
+        VacationDto vacationDto = vacationMRepository.findVacationByMemberNameAndVacationYear(name, searchDTO.getVacationYear());
+        List<VacationHistoryDto> histories = historyRepository.findByNameAndYear(name, searchDTO.getVacationYear());
+        vacationDto.setHistories(histories);
+        return vacationDto;
     }
 
     @Transactional
