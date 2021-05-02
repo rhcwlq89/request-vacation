@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.SearchDTO;
-import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationRequestDto;
+import com.example.demo.entity.MemberVacationM;
 import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,26 +25,19 @@ public class VacationController {
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<String> requestVacation(@RequestBody VacationRequestDto vacationRequestDto) {
         vacationService.requestVacation(vacationRequestDto);
-        return null;
+        return ResponseEntity.ok("success");
     }
 
-    @DeleteMapping
+    @PutMapping("/{historyId}")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> cancelVacation(@RequestBody Long historyId) {
+    public ResponseEntity<String> cancelVacation(@PathVariable Long historyId) {
         vacationService.cancelVacation(historyId);
         return null;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<Page<VacationDto>> readVacations(@RequestParam SearchDTO searchDTO) {
+    public ResponseEntity<List<MemberVacationM>> readVacations(@ModelAttribute SearchDTO searchDTO) {
         return ResponseEntity.ok(vacationService.readVacations(searchDTO));
     }
-
-    @GetMapping("/detail/{historyId}")
-    @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<VacationDto> readVacationDetail(@PathVariable Long historyId) {
-        return ResponseEntity.ok(vacationService.readVacation(historyId));
-    }
-
 }

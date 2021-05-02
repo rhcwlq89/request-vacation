@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -40,8 +41,8 @@ public class MemberService implements UserDetailsService {
 
         MemberVacationM vacationM = new MemberVacationM();
         vacationM.setMemberM(memberM);
-        vacationM.setTotalCount(15d);
-        vacationM.setUseCount(0d);
+        vacationM.setTotalCount(BigDecimal.valueOf(15d));
+        vacationM.setUseCount(BigDecimal.valueOf(0d));
         vacationM.setVacationYear(String.valueOf(LocalDate.now().getYear()));
         vacationMRepository.save(vacationM);
     }
@@ -49,11 +50,11 @@ public class MemberService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return memberMRepository.findOneByName(username).map(user->createUser(username, user))
+        return memberMRepository.findOneByName(username).map(user->createUser(user))
         .orElseThrow(()-> new RuntimeException(username + " 회원 정보가 없습니다."));
     }
 
-    private User createUser(String username, MemberM user) {
+    private User createUser(MemberM user) {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getAuthority());
         return new User(user.getName(), user.getPassword(), List.of(simpleGrantedAuthority));
     }

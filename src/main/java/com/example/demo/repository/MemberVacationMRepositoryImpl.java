@@ -1,8 +1,10 @@
 package com.example.demo.repository;
 
 
+import com.example.demo.dto.SearchDTO;
 import com.example.demo.entity.MemberVacationM;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.example.demo.entity.QMemberM;
+import com.example.demo.entity.QMemberVacationM;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import javax.persistence.EntityManager;
@@ -23,7 +25,13 @@ public class MemberVacationMRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public List<MemberVacationM> findVacationByMemberId(Long memberId) {
-        return null;
+    public List<MemberVacationM> findVacationByMemberId(SearchDTO searchDTO) {
+        QMemberM qMemberM = QMemberM.memberM;
+        QMemberVacationM qMemberVacationM =QMemberVacationM.memberVacationM;
+
+        return from(qMemberVacationM).innerJoin(qMemberM).on(qMemberVacationM.memberM.eq(qMemberM))
+                .where(qMemberM.id.eq(searchDTO.getMemberId()),
+                        qMemberVacationM.vacationYear.eq(searchDTO.getVacationYear()))
+                .fetch();
     }
 }

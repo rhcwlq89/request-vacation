@@ -6,13 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter
+@EntityListeners(value = {AuditingEntityListener.class})
 @Table(schema = "vacation", name = "member_vacation_history")
 public class MemberVacationHistory {
     @Id
@@ -25,7 +28,7 @@ public class MemberVacationHistory {
     private MemberVacationM memberVacationM;
 
     @Column
-    private VacationStatusCode requestStatus;
+    private String requestStatus;
 
     @Column
     private LocalDate startDate;
@@ -34,7 +37,7 @@ public class MemberVacationHistory {
     private LocalDate endDate;
 
     @Column
-    private Double vacationDays;
+    private BigDecimal vacationDays;
 
     @CreatedDate
     @Column

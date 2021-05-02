@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberVacationMRepository extends JpaRepository<MemberVacationM, Long>, MemberVacationMRepositoryCustom {
+public interface MemberVacationMRepository extends JpaRepository<MemberVacationM, Long>,
+        MemberVacationMRepositoryCustom{
     Optional<MemberVacationM> findByMemberM(MemberM member);
 }
