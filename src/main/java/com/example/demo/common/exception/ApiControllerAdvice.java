@@ -11,7 +11,6 @@ public class ApiControllerAdvice {
 
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<String> handleRunTimeException(Exception e) {
-        log.error(e.getMessage());
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

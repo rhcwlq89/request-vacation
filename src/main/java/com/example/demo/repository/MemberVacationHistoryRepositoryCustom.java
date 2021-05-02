@@ -1,0 +1,11 @@
+package com.example.demo.repository;
+
+import com.example.demo.common.code.VacationStatusCode;
+import com.example.demo.entity.MemberVacationHistory;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface MemberVacationHistoryRepositoryCustom {
+    List<MemberVacationHistory> findHistoryListByStatusCode(VacationStatusCode statusCode, LocalDate localDate);
+}

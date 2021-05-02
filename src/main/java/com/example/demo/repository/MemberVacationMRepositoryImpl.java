@@ -30,8 +30,7 @@ public class MemberVacationMRepositoryImpl extends QuerydslRepositorySupport imp
         QMemberVacationM qMemberVacationM =QMemberVacationM.memberVacationM;
 
         return from(qMemberVacationM).innerJoin(qMemberM).on(qMemberVacationM.memberM.eq(qMemberM))
-                .where(qMemberM.id.eq(searchDTO.getMemberId()),
-                        qMemberVacationM.vacationYear.eq(searchDTO.getVacationYear()))
+                .where(qMemberVacationM.vacationYear.eq(searchDTO.getVacationYear()))
                 .fetch();
     }
 }
