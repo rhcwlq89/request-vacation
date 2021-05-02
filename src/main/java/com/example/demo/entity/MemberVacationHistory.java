@@ -39,6 +39,9 @@ public class MemberVacationHistory {
     @Column
     private BigDecimal vacationDays;
 
+    @Column
+    private String memo;
+
     @CreatedDate
     @Column
     private LocalDateTime regDt;

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.common.code.VacationStatusCode;
+import com.example.demo.common.code.VacationTypeCode;
 import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.entity.MemberM;
@@ -37,8 +38,15 @@ public class VacationService {
 
     @Transactional
     public void requestVacation(VacationRequestDto vacationRequestDto) {
-        Optional<MemberM> memberM = memberMRepository.findById(vacationRequestDto.getMemberId());
-        memberM.ifPresent(member -> {
+        if(historyRepository.existsHistoryByVacationRequestDto(vacationRequestDto)) {
+            throw new RuntimeException("중복된 휴가가 있습니다.");
+        }
+
+        if(vacationRequestDto.getUseDays().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("휴가기간이 잘못 설정되었습니다.");
+        }
+
+        memberMRepository.findOneByName(vacationRequestDto.getName()).ifPresent(member -> {
             vacationMRepository.findByMemberM(member).ifPresent(vacationM -> {
                 if(vacationM.getTotalCount().compareTo(vacationM.getUseCount().add(vacationRequestDto.getUseDays())) >= 0) {
                     MemberVacationHistory history = new MemberVacationHistory();
