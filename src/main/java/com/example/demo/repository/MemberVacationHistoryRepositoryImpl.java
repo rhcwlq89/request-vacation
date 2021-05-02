@@ -2,11 +2,13 @@ package com.example.demo.repository;
 
 import com.example.demo.common.code.VacationStatusCode;
 import com.example.demo.common.code.VacationTypeCode;
+import com.example.demo.dto.VacationHistoryDto;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.entity.MemberVacationHistory;
 import com.example.demo.entity.QMemberM;
 import com.example.demo.entity.QMemberVacationHistory;
 import com.example.demo.entity.QMemberVacationM;
+import com.querydsl.core.types.Projections;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import javax.persistence.EntityManager;
@@ -62,5 +64,21 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
         }
 
         return !(history == null);
+    }
+
+    @Override
+    public List<VacationHistoryDto> findByNameAndYear(String name, String year) {
+        QMemberM qMemberM = QMemberM.memberM;
+        QMemberVacationM qVacationM = QMemberVacationM.memberVacationM;
+        QMemberVacationHistory qHistory = QMemberVacationHistory.memberVacationHistory;
+
+        return from(qHistory).innerJoin(qVacationM).on(qHistory.memberVacationM.eq(qVacationM))
+                .innerJoin(qMemberM).on(qVacationM.memberM.eq(qMemberM))
+                .select(Projections.constructor(VacationHistoryDto.class,
+                        qHistory.historyId, qHistory.requestStatus,
+                        qHistory.startDate, qHistory.endDate,
+                        qHistory.vacationDays, qHistory.memo,
+                        qHistory.regDt, qHistory.modDt))
+                .where(qMemberM.name.eq(name), qVacationM.vacationYear.eq(year)).fetch();
     }
 }

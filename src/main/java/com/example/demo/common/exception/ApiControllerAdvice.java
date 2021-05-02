@@ -1,5 +1,6 @@
 package com.example.demo.common.exception;
 
+import com.example.demo.common.ResponseMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,8 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiControllerAdvice {
 
     @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<String> handleRunTimeException(Exception e) {
-        log.error(e.getMessage());
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ResponseMessage> handleRunTimeException(Exception e) {
+        return ResponseEntity.badRequest().body(new ResponseMessage(null, e.getMessage()));
     }
 }

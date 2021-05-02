@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.ResponseMessage;
 import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.entity.MemberVacationM;
@@ -23,21 +24,20 @@ public class VacationController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> requestVacation(@RequestBody VacationRequestDto vacationRequestDto) {
-        vacationService.requestVacation(vacationRequestDto);
-        return ResponseEntity.ok("success");
+    public ResponseEntity<ResponseMessage> requestVacation(@RequestBody VacationRequestDto vacationRequestDto) {
+        return ResponseEntity.ok(new ResponseMessage(vacationService.requestVacation(vacationRequestDto), "success"));
     }
 
     @PutMapping("/{historyId}")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> cancelVacation(@PathVariable Long historyId) {
+    public ResponseEntity<ResponseMessage> cancelVacation(@PathVariable Long historyId) {
         vacationService.cancelVacation(historyId);
         return null;
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<List<MemberVacationM>> readVacations(@ModelAttribute SearchDTO searchDTO) {
-        return ResponseEntity.ok(vacationService.readVacations(searchDTO));
+    public ResponseEntity<ResponseMessage> readVacations(@ModelAttribute SearchDTO searchDTO) {
+        return ResponseEntity.ok(new ResponseMessage(vacationService.readVacations(searchDTO), "success"));
     }
 }

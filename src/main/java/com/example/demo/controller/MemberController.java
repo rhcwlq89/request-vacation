@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.ResponseMessage;
 import com.example.demo.dto.MemberDto;
 import com.example.demo.dto.TokenDto;
 import com.example.demo.jwt.JwtFilter;
@@ -29,7 +30,7 @@ public class MemberController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping(path = "/signin")
-    public ResponseEntity<TokenDto> signin(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<ResponseMessage> signin(@RequestBody MemberDto memberDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(memberDto.getName(), memberDto.getPassword());
 
@@ -41,12 +42,12 @@ public class MemberController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage(new TokenDto(jwt), "success"), httpHeaders, HttpStatus.OK);
     }
 
     @PostMapping(path = "/signup")
-    public ResponseEntity<String> signup(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<ResponseMessage> signup(@RequestBody MemberDto memberDto) {
         memberService.signup(memberDto);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(new ResponseMessage(null, "success"));
     }
 }

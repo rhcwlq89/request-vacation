@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.common.code.VacationStatusCode;
 import com.example.demo.common.code.VacationTypeCode;
 import com.example.demo.dto.SearchDTO;
+import com.example.demo.dto.VacationDto;
+import com.example.demo.dto.VacationHistoryDto;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.entity.MemberM;
 import com.example.demo.entity.MemberVacationHistory;
@@ -37,57 +39,65 @@ public class VacationService {
             "(?,?,?,?) ";
 
     @Transactional
-    public void requestVacation(VacationRequestDto vacationRequestDto) {
+    public VacationDto requestVacation(VacationRequestDto vacationRequestDto) {
+        LocalDate startDate = vacationRequestDto.getStartDate();
+        LocalDate endDate = vacationRequestDto.getEndDate();
+        BigDecimal useDays = vacationRequestDto.getUseDays();
+        VacationDto result = new VacationDto();
+
         if(historyRepository.existsHistoryByVacationRequestDto(vacationRequestDto)) {
             throw new RuntimeException("중복된 휴가가 있습니다.");
         }
 
-        if(vacationRequestDto.getUseDays().compareTo(BigDecimal.ZERO) <= 0) {
+        if(useDays.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("휴가기간이 잘못 설정되었습니다.");
+        }
+
+        if(startDate.getYear() != endDate.getYear()) {
+            throw new RuntimeException("휴가 시작일자와 종료일자는 같은 연도여야 합니다.");
         }
 
         memberMRepository.findOneByName(vacationRequestDto.getName()).ifPresent(member -> {
             vacationMRepository.findByMemberM(member).ifPresent(vacationM -> {
-                if(vacationM.getTotalCount().compareTo(vacationM.getUseCount().add(vacationRequestDto.getUseDays())) >= 0) {
+                if(vacationM.getTotalCount().compareTo(vacationM.getUseCount().add(useDays)) >= 0) {
                     MemberVacationHistory history = new MemberVacationHistory();
                     history.setMemberVacationM(vacationM);
                     history.setRequestStatus(VacationStatusCode.BEFORE.name());
-                    history.setStartDate(vacationRequestDto.getStartDate());
-                    history.setEndDate(vacationRequestDto.getEndDate());
-                    history.setVacationDays(vacationRequestDto.getUseDays());
+                    history.setStartDate(startDate);
+                    history.setEndDate(endDate);
+                    history.setVacationDays(useDays);
+                    history.setMemo(vacationRequestDto.getMemo());
                     historyRepository.save(history);
 
-                    vacationM.setUseCount(vacationM.getUseCount().add(vacationRequestDto.getUseDays()));
+                    vacationM.setUseCount(vacationM.getUseCount().add(useDays));
                 } else {
                     throw new RuntimeException("휴가일수가 부족합니다.");
                 }
+                result.setVacationYear(vacationM.getVacationYear());
+                result.setTotalCount(vacationM.getTotalCount());
+                result.setName(member.getName());
+                result.setUseCount(vacationM.getUseCount());
             });
         });
+
+        return result;
     }
 
     @Transactional
     public void cancelVacation(Long historyId) {
         MemberVacationHistory history = historyRepository
-                .findByHistoryIdAndRequestStatus(historyId, VacationStatusCode.BEFORE.name());
-
-        if(history == null) {
-            throw new RuntimeException("취소가능한 휴가가 없습니다.");
-        }
-
-        if(!history.getStartDate().isAfter(LocalDate.now())) {
-            throw new RuntimeException("휴가가 시작되어 취소할 수 없습니다.");
-        }
-
+                .findByHistoryIdAndRequestStatus(historyId, VacationStatusCode.BEFORE.name())
+                .orElseThrow(() -> new RuntimeException("취소가능한 휴가가 없습니다."));
         history.setRequestStatus(VacationStatusCode.CANCEL.name());
 
         MemberVacationM memberVacationM = history.getMemberVacationM();
-        BigDecimal subtract = memberVacationM.getUseCount().subtract(history.getVacationDays());
-        memberVacationM.setUseCount(subtract) ;
+        BigDecimal remainCount = memberVacationM.getUseCount().subtract(history.getVacationDays());
+        memberVacationM.setUseCount(remainCount) ;
     }
 
     @Transactional
-    public List<MemberVacationM> readVacations(SearchDTO searchDTO) {
-        return vacationMRepository.findVacationByMemberId(searchDTO);
+    public List<VacationHistoryDto> readVacations(SearchDTO searchDTO) {
+        return historyRepository.findByNameAndYear(searchDTO.getName(), searchDTO.getVacationYear());
     }
 
     @Transactional
