@@ -59,7 +59,7 @@ public class VacationService {
 
                     vacationM.setUseCount(vacationM.getUseCount().add(vacationRequestDto.getUseDays()));
                 } else {
-                    throw new RuntimeException("휴가일수 부족");
+                    throw new RuntimeException("휴가일수가 부족합니다.");
                 }
             });
         });
