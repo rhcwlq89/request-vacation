@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySupport implements MemberVacationHistoryRepositoryCustom {
     public MemberVacationHistoryRepositoryImpl() {
@@ -37,7 +38,7 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
     }
 
     @Override
-    public boolean existsHistoryByVacationRequestDto(VacationRequestDto vacationRequestDto) {
+    public boolean existsHistoryByVacationRequestDto(VacationRequestDto vacationRequestDto, String name) {
         QMemberM qMemberM = QMemberM.memberM;
         QMemberVacationM qVacationM = QMemberVacationM.memberVacationM;
         QMemberVacationHistory qHistory = QMemberVacationHistory.memberVacationHistory;
@@ -48,7 +49,7 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
                     .innerJoin(qVacationM).on(qHistory.memberVacationM.eq(qVacationM))
                     .innerJoin(qMemberM).on(qVacationM.memberM.eq(qMemberM))
                     .where(qHistory.requestStatus.eq(VacationStatusCode.BEFORE.name())
-                            .and(qMemberM.name.eq(vacationRequestDto.getName()))
+                            .and(qMemberM.name.eq(name))
                             .and(qHistory.startDate.goe(vacationRequestDto.getStartDate()))
                             .and(qHistory.endDate.loe(vacationRequestDto.getEndDate()))
                     ).fetchFirst();
@@ -58,7 +59,7 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
                     .innerJoin(qVacationM).on(qHistory.memberVacationM.eq(qVacationM))
                     .innerJoin(qMemberM).on(qVacationM.memberM.eq(qMemberM))
                     .where(qHistory.requestStatus.eq(VacationStatusCode.BEFORE.name())
-                            .and(qMemberM.name.eq(vacationRequestDto.getName()))
+                            .and(qMemberM.name.eq(name))
                             .and(qHistory.startDate.eq(vacationRequestDto.getStartDate()))
                     ).fetchFirst();
         }
@@ -80,5 +81,18 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
                         qHistory.vacationDays, qHistory.memo,
                         qHistory.regDt, qHistory.modDt))
                 .where(qMemberM.name.eq(name), qVacationM.vacationYear.eq(year)).fetch();
+    }
+
+    @Override
+    public Optional<MemberVacationHistory> findByHistoryIdAndRequestStatus(Long historyId, String requestStatus, String name) {
+        QMemberM qMemberM = QMemberM.memberM;
+        QMemberVacationM qVacationM = QMemberVacationM.memberVacationM;
+        QMemberVacationHistory qHistory = QMemberVacationHistory.memberVacationHistory;
+        MemberVacationHistory history = from(qHistory).innerJoin(qVacationM).on(qHistory.memberVacationM.eq(qVacationM))
+                .innerJoin(qMemberM).on(qVacationM.memberM.eq(qMemberM))
+                .where(qMemberM.name.eq(name).and(qHistory.historyId.eq(historyId)).and(qHistory.requestStatus.eq(requestStatus)))
+                .fetchFirst();
+
+        return Optional.ofNullable(history);
     }
 }

@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MemberVacationHistoryRepository extends JpaRepository<MemberVacationHistory, Long>,
         MemberVacationHistoryRepositoryCustom {
-    Optional<MemberVacationHistory> findByHistoryIdAndRequestStatus(Long historyId, String requestStatus);
+
 }

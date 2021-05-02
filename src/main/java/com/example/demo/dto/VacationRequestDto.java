@@ -11,8 +11,6 @@ import java.time.LocalDate;
 @Data
 public class VacationRequestDto {
     @NotNull
-    private String name;
-    @NotNull
     private LocalDate startDate;
     private LocalDate endDate;
     @NotNull

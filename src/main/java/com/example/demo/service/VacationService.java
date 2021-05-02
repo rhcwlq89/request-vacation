@@ -11,6 +11,7 @@ import com.example.demo.entity.MemberVacationM;
 import com.example.demo.repository.MemberMRepository;
 import com.example.demo.repository.MemberVacationHistoryRepository;
 import com.example.demo.repository.MemberVacationMRepository;
+import com.example.demo.util.SecurityUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,12 +40,13 @@ public class VacationService {
 
     @Transactional
     public VacationDto requestVacation(VacationRequestDto vacationRequestDto) {
+        String name = SecurityUtil.getCurrentUsername().orElseThrow(() -> new RuntimeException("알 수 없는 사용자입니다."));
         LocalDate startDate = vacationRequestDto.getStartDate();
         LocalDate endDate = vacationRequestDto.getEndDate();
         BigDecimal useDays = vacationRequestDto.getUseDays();
         VacationDto result = new VacationDto();
 
-        if(historyRepository.existsHistoryByVacationRequestDto(vacationRequestDto)) {
+        if(historyRepository.existsHistoryByVacationRequestDto(vacationRequestDto, name)) {
             throw new RuntimeException("중복된 휴가가 있습니다.");
         }
 
@@ -55,7 +58,7 @@ public class VacationService {
             throw new RuntimeException("휴가 시작일자와 종료일자는 같은 연도여야 합니다.");
         }
 
-        memberMRepository.findOneByName(vacationRequestDto.getName()).ifPresent(member -> {
+        memberMRepository.findOneByName(name).ifPresent(member -> {
             vacationMRepository.findByMemberM(member).ifPresent(vacationM -> {
                 if(vacationM.getTotalCount().compareTo(vacationM.getUseCount().add(useDays)) >= 0) {
                     MemberVacationHistory history = new MemberVacationHistory();
@@ -85,8 +88,9 @@ public class VacationService {
 
     @Transactional
     public BigDecimal cancelVacation(Long historyId) {
+        String name = SecurityUtil.getCurrentUsername().orElseThrow(() -> new RuntimeException("알 수 없는 사용자입니다."));
         MemberVacationHistory history = historyRepository
-                .findByHistoryIdAndRequestStatus(historyId, VacationStatusCode.BEFORE.name())
+                .findByHistoryIdAndRequestStatus(historyId, VacationStatusCode.BEFORE.name(), name)
                 .orElseThrow(() -> new RuntimeException("취소가능한 휴가가 없습니다."));
         history.setRequestStatus(VacationStatusCode.CANCEL.name());
 
@@ -98,7 +102,8 @@ public class VacationService {
 
     @Transactional
     public List<VacationHistoryDto> readVacations(SearchDTO searchDTO) {
-        return historyRepository.findByNameAndYear(searchDTO.getName(), searchDTO.getVacationYear());
+        String name = SecurityUtil.getCurrentUsername().orElseThrow(() -> new RuntimeException("알 수 없는 사용자입니다."));
+        return historyRepository.findByNameAndYear(name, searchDTO.getVacationYear());
     }
 
     @Transactional

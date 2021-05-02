@@ -12,10 +12,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchDTO {
-    private Integer pageRows = 10;
-    private Integer pageNo = 1;
-    @NotNull
-    private String name;
     @NotNull
     private String vacationYear;
 }

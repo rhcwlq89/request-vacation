@@ -7,11 +7,14 @@ import com.example.demo.entity.MemberVacationHistory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberVacationHistoryRepositoryCustom {
     List<VacationHistoryDto> findByNameAndYear(String name, String year);
 
     List<MemberVacationHistory> findHistoryListByStatusCode(VacationStatusCode statusCode, LocalDate localDate);
 
-    boolean existsHistoryByVacationRequestDto(VacationRequestDto vacationRequestDto);
+    boolean existsHistoryByVacationRequestDto(VacationRequestDto vacationRequestDto, String name);
+
+    Optional<MemberVacationHistory> findByHistoryIdAndRequestStatus(Long historyId, String requestStatus, String name);
 }

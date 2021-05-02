@@ -7,6 +7,8 @@ import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +24,8 @@ public class VacationController {
     @PostMapping
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ResponseMessage> requestVacation(@RequestBody VacationRequestDto vacationRequestDto) {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         return ResponseEntity.ok(new ResponseMessage(vacationService.requestVacation(vacationRequestDto), "success"));
     }
 
