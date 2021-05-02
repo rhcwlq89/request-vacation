@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.common.code.VacationStatusCode;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;

@@ -3,14 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.common.ResponseMessage;
 import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationRequestDto;
-import com.example.demo.entity.MemberVacationM;
 import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/vacation")
@@ -31,8 +28,7 @@ public class VacationController {
     @PutMapping("/{historyId}")
     @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ResponseMessage> cancelVacation(@PathVariable Long historyId) {
-        vacationService.cancelVacation(historyId);
-        return null;
+        return ResponseEntity.ok(new ResponseMessage(vacationService.cancelVacation(historyId), "success"));
     }
 
     @GetMapping

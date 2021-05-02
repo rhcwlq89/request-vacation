@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.common.code.VacationStatusCode;
-import com.example.demo.common.code.VacationTypeCode;
 import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationHistoryDto;
@@ -22,7 +21,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -62,7 +60,9 @@ public class VacationService {
                 if(vacationM.getTotalCount().compareTo(vacationM.getUseCount().add(useDays)) >= 0) {
                     MemberVacationHistory history = new MemberVacationHistory();
                     history.setMemberVacationM(vacationM);
-                    history.setRequestStatus(VacationStatusCode.BEFORE.name());
+                    VacationStatusCode status = startDate.isAfter(LocalDate.now())
+                            ? VacationStatusCode.BEFORE : VacationStatusCode.USED;
+                    history.setRequestStatus(status.name());
                     history.setStartDate(startDate);
                     history.setEndDate(endDate);
                     history.setVacationDays(useDays);
@@ -84,7 +84,7 @@ public class VacationService {
     }
 
     @Transactional
-    public void cancelVacation(Long historyId) {
+    public BigDecimal cancelVacation(Long historyId) {
         MemberVacationHistory history = historyRepository
                 .findByHistoryIdAndRequestStatus(historyId, VacationStatusCode.BEFORE.name())
                 .orElseThrow(() -> new RuntimeException("취소가능한 휴가가 없습니다."));
@@ -93,6 +93,7 @@ public class VacationService {
         MemberVacationM memberVacationM = history.getMemberVacationM();
         BigDecimal remainCount = memberVacationM.getUseCount().subtract(history.getVacationDays());
         memberVacationM.setUseCount(remainCount) ;
+        return remainCount;
     }
 
     @Transactional
