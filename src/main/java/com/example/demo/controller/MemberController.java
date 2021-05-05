@@ -26,28 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
 
     @PostMapping(path = "/signin")
     public ResponseEntity<ResponseMessage> signin(@RequestBody MemberDto memberDto) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(memberDto.getName(), memberDto.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-
-        return new ResponseEntity<>(new ResponseMessage(new TokenDto(jwt), "success"), httpHeaders, HttpStatus.OK);
+        return ResponseEntity.ok(new ResponseMessage(memberService.signIn(memberDto), "success"));
     }
 
     @PostMapping(path = "/signup")
     public ResponseEntity<ResponseMessage> signup(@RequestBody MemberDto memberDto) {
-        memberService.signup(memberDto);
-        return ResponseEntity.ok(new ResponseMessage(null, "success"));
+        return ResponseEntity.ok(new ResponseMessage(memberService.signUp(memberDto), "success"));
     }
 }

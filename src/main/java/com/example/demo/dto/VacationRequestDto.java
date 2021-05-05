@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.common.code.VacationTypeCode;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class VacationRequestDto {
     @NotNull
     private LocalDate startDate;
