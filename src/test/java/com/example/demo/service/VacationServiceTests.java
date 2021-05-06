@@ -10,12 +10,13 @@ import com.example.demo.entity.MemberVacationM;
 import com.example.demo.repository.MemberMRepository;
 import com.example.demo.repository.MemberVacationHistoryRepository;
 import com.example.demo.repository.MemberVacationMRepository;
-import org.junit.jupiter.api.BeforeAll;
+import com.example.demo.util.SecurityUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -31,9 +33,6 @@ import static org.mockito.BDDMockito.given;
 public class VacationServiceTests {
     @InjectMocks
     private VacationService vacationService;
-
-    @Autowired
-    private MemberService memberService;
 
     @Mock
     private MemberMRepository memberMRepository;
@@ -46,14 +45,16 @@ public class VacationServiceTests {
 
 
     @Test
-    public void 휴가신청() {
+    public void 휴가신청_정상() {
         // given
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         VacationRequestDto daysVacationDto = createDaysVacationDto();
         MemberDto memberDto = createMemberDto();
         MemberM memberM = createMemberM(memberDto, passwordEncoder);
         MemberVacationM vacationM = createVacationM(memberM);
-        
+        MockedStatic<SecurityUtil> utilities = Mockito.mockStatic(SecurityUtil.class);
+
+        utilities.when(SecurityUtil::getCurrentUsername).thenReturn(Optional.ofNullable("hojong"));
         given(historyRepository.existsHistoryByVacationRequestDto(any(), any())).willReturn(false);
         given(memberMRepository.findOneByName(any())).willReturn(Optional.ofNullable(memberM));
         given(vacationMRepository.findByMemberM(any())).willReturn(Optional.ofNullable(vacationM));
@@ -61,6 +62,8 @@ public class VacationServiceTests {
         // when
         VacationDto vacationDto = vacationService.requestVacation(daysVacationDto);
 
+        // then
+        assertEquals(daysVacationDto.getStartDate().getYear(), Integer.valueOf(vacationDto.getVacationYear()));
     }
 
     private MemberM createMemberM(MemberDto memberDto, BCryptPasswordEncoder passwordEncoder) {
@@ -68,7 +71,6 @@ public class VacationServiceTests {
                 .id(1l)
                 .name(memberDto.getName())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
-                .authority("ROLE_USER")
                 .build();
     }
 
@@ -82,7 +84,7 @@ public class VacationServiceTests {
     private MemberVacationM createVacationM(MemberM memberM) {
         MemberVacationM vacationM = new MemberVacationM();
         vacationM.setMemberM(memberM);
-        vacationM.setTotalCount(BigDecimal.ONE);
+        vacationM.setTotalCount(BigDecimal.TEN);
         vacationM.setUseCount(BigDecimal.ZERO);
         vacationM.setMemberVacationId(1L);
         vacationM.setVacationYear(String.valueOf(LocalDate.now().getYear()));
@@ -92,7 +94,7 @@ public class VacationServiceTests {
 
     private VacationRequestDto createDaysVacationDto() {
         return VacationRequestDto.builder().startDate(LocalDate.now())
-                .endDate(LocalDate.now().plusDays(2))
+                .endDate(LocalDate.now().plusDays(7))
                 .typeCode(VacationTypeCode.DAYS)
                 .memo("days").build();
     }

@@ -47,7 +47,8 @@ public class MemberService implements UserDetailsService {
         MemberM memberM = MemberM.builder()
                 .name(memberDto.getName())
                 .password(passwordEncoder.encode(memberDto.getPassword())).build();
-        memberMRepository.save(memberM);
+        MemberM save = memberMRepository.save(memberM);
+
 
         MemberVacationM vacationM = new MemberVacationM();
         vacationM.setMemberM(memberM);
@@ -56,7 +57,7 @@ public class MemberService implements UserDetailsService {
         vacationM.setVacationYear(String.valueOf(LocalDate.now().getYear()));
         vacationMRepository.save(vacationM);
 
-        return memberM.getId();
+        return save.getId();
     }
 
     public TokenDto signIn(MemberDto memberDto) {

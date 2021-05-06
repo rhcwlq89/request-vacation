@@ -1,7 +1,9 @@
 package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,7 +17,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter
 @EntityListeners(value = {AuditingEntityListener.class})
-@Table(schema = "vacation", name = "member_vacation_history")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "member_vacation_history")
 public class MemberVacationHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

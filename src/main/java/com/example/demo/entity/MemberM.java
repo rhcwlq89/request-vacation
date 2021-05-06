@@ -1,15 +1,15 @@
 package com.example.demo.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter @Setter
 @Builder
-@Table(schema = "vacation", name="member_m")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name="member_m")
 public class MemberM {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +22,6 @@ public class MemberM {
     private String password;
 
     @Column(name = "authority")
-    private String authority = "ROLE_USER";
+    private final String authority = "ROLE_USER";
 
 }

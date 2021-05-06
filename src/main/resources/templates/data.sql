@@ -4,7 +4,7 @@ CREATE TABLE `member_m` (
   `password` varchar(255) NOT NULL COMMENT '비밀번호',
   `authority` varchar(45) NOT NULL DEFAULT 'ROLE_USER',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='회원테이블';
+) AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='회원테이블';
 
 CREATE TABLE `member_vacation_history` (
   `history_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '휴가신청ID',
@@ -17,7 +17,7 @@ CREATE TABLE `member_vacation_history` (
   `reg_dt` datetime NOT NULL DEFAULT current_timestamp(),
   `mod_dt` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`history_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `member_vacation_m` (
   `member_vacation_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -26,4 +26,4 @@ CREATE TABLE `member_vacation_m` (
   `total_count` decimal(4,2) NOT NULL,
   `use_count` decimal(4,2) NOT NULL,
   PRIMARY KEY (`member_vacation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;

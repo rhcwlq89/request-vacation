@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -32,7 +33,7 @@ public class MemberServiceTests {
     private MemberVacationMRepository memberVacationMRepository;
 
     @Test
-    public void 회원가입() {
+    public void 회원가입_정상() {
         // given
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         MemberDto memberDto = createMemberDto();
@@ -51,7 +52,24 @@ public class MemberServiceTests {
     }
 
     @Test
-    public void 로그인() {
+    public void 회원가입_중복가입() {
+        // given
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        MemberDto memberDto = createMemberDto();
+        MemberM memberM = createMemberM(memberDto, passwordEncoder);
+
+        given(memberMRepository.findOneByName(any())).willReturn(Optional.of(memberM));
+
+        // when
+        RuntimeException alreadyUserException = assertThrows(RuntimeException.class, () -> {
+            memberService.signUp(memberDto);
+        });
+        String message = alreadyUserException.getMessage();
+        assertEquals("이미 가입한 유저입니다.", message);
+    }
+
+    @Test
+    public void 로그인_정상() {
         // given
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         MemberDto memberDto = createMemberDto();
@@ -67,13 +85,28 @@ public class MemberServiceTests {
         assertEquals(memberM.getPassword(), userDetails.getPassword());
     }
 
+    @Test
+    public void 로그인_미회원() {
+        // given
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        MemberDto memberDto = createMemberDto();
+        MemberM memberM = createMemberM(memberDto, passwordEncoder);
+
+        given(memberMRepository.findOneByName(any())).willReturn(Optional.ofNullable(null));
+
+        // when
+        RuntimeException userNotFoundException = assertThrows(RuntimeException.class, () -> {
+            memberService.loadUserByUsername(memberDto.getName());
+        });
+        String message = userNotFoundException.getMessage();
+        assertEquals(memberM.getName() + " 회원 정보가 없습니다.", message);
+    }
 
     private MemberM createMemberM(MemberDto memberDto, BCryptPasswordEncoder passwordEncoder) {
         return MemberM.builder()
                 .id(1l)
                 .name(memberDto.getName())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
-                .authority("ROLE_USER")
                 .build();
     }
 
