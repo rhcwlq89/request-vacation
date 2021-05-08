@@ -47,7 +47,6 @@ public class MemberServiceTests {
 
         // then
         MemberM result = memberMRepository.findById(id).get();
-
         assertEquals(id, result.getId());
     }
 
@@ -64,6 +63,8 @@ public class MemberServiceTests {
         RuntimeException alreadyUserException = assertThrows(RuntimeException.class, () -> {
             memberService.signUp(memberDto);
         });
+
+        // then
         String message = alreadyUserException.getMessage();
         assertEquals("이미 가입한 유저입니다.", message);
     }
@@ -98,6 +99,8 @@ public class MemberServiceTests {
         RuntimeException userNotFoundException = assertThrows(RuntimeException.class, () -> {
             memberService.loadUserByUsername(memberDto.getName());
         });
+
+        // then
         String message = userNotFoundException.getMessage();
         assertEquals(memberM.getName() + " 회원 정보가 없습니다.", message);
     }

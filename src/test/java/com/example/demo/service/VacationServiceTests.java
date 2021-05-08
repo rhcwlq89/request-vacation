@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -64,6 +65,31 @@ public class VacationServiceTests {
 
         // then
         assertEquals(daysVacationDto.getStartDate().getYear(), Integer.valueOf(vacationDto.getVacationYear()));
+    }
+
+    @Test
+    public void 휴가신청_미회원() {
+        // given
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        VacationRequestDto daysVacationDto = createDaysVacationDto();
+        MemberDto memberDto = createMemberDto();
+        MemberM memberM = createMemberM(memberDto, passwordEncoder);
+        MemberVacationM vacationM = createVacationM(memberM);
+        MockedStatic<SecurityUtil> utilities = Mockito.mockStatic(SecurityUtil.class);
+
+        utilities.when(SecurityUtil::getCurrentUsername).thenReturn(Optional.ofNullable(null));
+        given(historyRepository.existsHistoryByVacationRequestDto(any(), any())).willReturn(false);
+        given(memberMRepository.findOneByName(any())).willReturn(Optional.ofNullable(memberM));
+        given(vacationMRepository.findByMemberM(any())).willReturn(Optional.ofNullable(vacationM));
+
+        // when
+        RuntimeException unexpectedUserException = assertThrows(RuntimeException.class, () -> {
+            vacationService.requestVacation(daysVacationDto);
+        });
+
+        // then
+        String message = unexpectedUserException.getMessage();
+        assertEquals("알 수 없는 사용자입니다.", message);
     }
 
     private MemberM createMemberM(MemberDto memberDto, BCryptPasswordEncoder passwordEncoder) {
