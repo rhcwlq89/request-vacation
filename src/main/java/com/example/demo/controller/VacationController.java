@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ResponseMessage;
-import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationRequestDto;
 import com.example.demo.service.VacationService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,7 @@ public class VacationController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<ResponseMessage> readVacations(@ModelAttribute SearchDTO searchDTO) {
-        return ResponseEntity.ok(new ResponseMessage(vacationService.readVacations(searchDTO), "success"));
+    public ResponseEntity<ResponseMessage> readVacations(@RequestParam String vacationYear) {
+        return ResponseEntity.ok(new ResponseMessage(vacationService.readVacations(vacationYear), "success"));
     }
 }

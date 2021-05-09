@@ -12,7 +12,7 @@ public class VacationDto {
     private String name;
     private BigDecimal totalCount;
     private BigDecimal useCount;
-    private String vacationYear;
+    private String  vacationYear;
     private List<VacationHistoryDto> histories;
 
     public VacationDto(String name, BigDecimal totalCount, BigDecimal useCount, String vacationYear) {

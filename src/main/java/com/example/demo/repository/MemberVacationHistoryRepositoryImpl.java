@@ -8,6 +8,7 @@ import com.example.demo.entity.MemberVacationHistory;
 import com.example.demo.entity.QMemberM;
 import com.example.demo.entity.QMemberVacationHistory;
 import com.example.demo.entity.QMemberVacationM;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -88,7 +89,9 @@ public class MemberVacationHistoryRepositoryImpl extends QuerydslRepositorySuppo
         QMemberM qMemberM = QMemberM.memberM;
         QMemberVacationM qVacationM = QMemberVacationM.memberVacationM;
         QMemberVacationHistory qHistory = QMemberVacationHistory.memberVacationHistory;
-        MemberVacationHistory history = from(qHistory).innerJoin(qVacationM).on(qHistory.memberVacationM.eq(qVacationM))
+
+        MemberVacationHistory history = from(qHistory)
+                .innerJoin(qHistory.memberVacationM, qVacationM).fetchJoin()
                 .innerJoin(qMemberM).on(qVacationM.memberM.eq(qMemberM))
                 .where(qMemberM.name.eq(name).and(qHistory.historyId.eq(historyId)).and(qHistory.requestStatus.eq(requestStatus)))
                 .fetchFirst();

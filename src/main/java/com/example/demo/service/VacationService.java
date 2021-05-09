@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.common.code.VacationStatusCode;
-import com.example.demo.dto.SearchDTO;
 import com.example.demo.dto.VacationDto;
 import com.example.demo.dto.VacationHistoryDto;
 import com.example.demo.dto.VacationRequestDto;
@@ -53,7 +52,7 @@ public class VacationService {
             throw new RuntimeException("휴가기간이 잘못 설정되었습니다.");
         }
 
-        if(startDate.getYear() != endDate.getYear()) {
+        if(endDate != null && startDate.getYear() != endDate.getYear()) {
             throw new RuntimeException("휴가 시작일자와 종료일자는 같은 연도여야 합니다.");
         }
 
@@ -100,10 +99,10 @@ public class VacationService {
     }
 
     @Transactional
-    public VacationDto readVacations(SearchDTO searchDTO) {
+    public VacationDto readVacations(String vacationYear) {
         String name = SecurityUtil.getCurrentUsername().orElseThrow(() -> new RuntimeException("알 수 없는 사용자입니다."));
-        VacationDto vacationDto = vacationMRepository.findVacationByMemberNameAndVacationYear(name, searchDTO.getVacationYear());
-        List<VacationHistoryDto> histories = historyRepository.findByNameAndYear(name, searchDTO.getVacationYear());
+        VacationDto vacationDto = vacationMRepository.findVacationByMemberNameAndVacationYear(name, vacationYear);
+        List<VacationHistoryDto> histories = historyRepository.findByNameAndYear(name, vacationYear);
         vacationDto.setHistories(histories);
         return vacationDto;
     }
