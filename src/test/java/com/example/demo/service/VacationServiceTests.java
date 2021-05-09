@@ -143,7 +143,8 @@ public class VacationServiceTests {
         // given
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         VacationRequestDto daysVacationDto = createDaysVacationDto();
-        daysVacationDto.setEndDate(LocalDate.now());
+        LocalDate endDate = daysVacationDto.getStartDate().minusDays(1L);
+        daysVacationDto.setEndDate(endDate);
 
         MemberDto memberDto = createMemberDto();
         MemberM memberM = createMemberM(memberDto, passwordEncoder);
@@ -354,7 +355,7 @@ public class VacationServiceTests {
 
     private VacationRequestDto createDaysVacationDto() {
         return VacationRequestDto.builder().startDate(LocalDate.parse("2021-05-10"))
-                .endDate(LocalDate.now().plusDays(7))
+                .endDate(LocalDate.parse("2021-05-10").plusDays(7))
                 .typeCode(VacationTypeCode.DAYS)
                 .memo("days").build();
     }

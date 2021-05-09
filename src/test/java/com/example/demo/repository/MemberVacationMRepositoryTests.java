@@ -55,6 +55,7 @@ public class MemberVacationMRepositoryTests {
         // when
         VacationDto hojong = vacationMRepository.findVacationByMemberNameAndVacationYear("hojong", "2021");
 
+        // then
         assertEquals("hojong", hojong.getName());
         assertEquals(15L, hojong.getTotalCount().longValue());
         assertEquals(0L, hojong.getUseCount().longValue());

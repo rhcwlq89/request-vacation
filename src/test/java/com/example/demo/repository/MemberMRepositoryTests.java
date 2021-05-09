@@ -28,8 +28,10 @@ public class MemberMRepositoryTests {
 
     @Test
     public void 이름으로_조회() {
+        //when
         MemberM hojong = memberMRepository.findOneByName("hojong").orElseThrow(RuntimeException::new);
 
+        //then
         assertEquals("hojong", hojong.getName());
         assertEquals("hojong", hojong.getPassword());
         assertEquals("ROLE_USER", hojong.getAuthority());
