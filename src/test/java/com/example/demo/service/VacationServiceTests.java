@@ -296,6 +296,21 @@ public class VacationServiceTests {
         vacationService.readVacations(vacationYear);
     }
 
+    @Test
+    public void 휴가조회_미회원() {
+        String vacationYear = "2021";
+
+        utilities.when(SecurityUtil::getCurrentUsername).thenReturn(Optional.ofNullable(null));
+
+        // when
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+            vacationService.readVacations(vacationYear);
+        });
+
+        // then
+        assertEquals("알 수 없는 사용자입니다.", runtimeException.getMessage());
+    }
+
     private MemberM createMemberM(MemberDto memberDto, BCryptPasswordEncoder passwordEncoder) {
         return MemberM.builder()
                 .id(1l)
